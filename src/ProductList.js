@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import productsData from './data';
+import { useLocalStorage } from "usehooks-ts";
+
+localStorage.setItem("items", JSON.stringify(productsData));
 
 
 function ProductList() {
   const [cartItems, setCartItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState("");
-  
+  const [savedItems, setSavedItems] = useLocalStorage("CheckedOut", []);
+  const [savedCartItems, setSavedCartItems] = useLocalStorage("CartItems", []);
+
+  useEffect(() => {
+    setSavedCartItems(cartItems);
+  }, [cartItems]);
 
   const handleAddToCart = (product) => {
     const existingItem = cartItems.find((item) => item.id === product.id);
@@ -53,7 +61,10 @@ function ProductList() {
     setSearchTerm(value);
   };
 
-  
+  const handleCheckout = () => {
+    setSavedItems([...savedItems, ...cartItems]); // add cartItems to savedItems
+    setCartItems([]); // clear cartItems
+  };
 
   const filteredProducts = productsData.filter((product) => {
     const searchTermMatch = product.name
@@ -65,10 +76,9 @@ function ProductList() {
 
     return searchTermMatch && categoryFilterMatch;
   });
-  
 
   return (
-  
+    
     
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-4">Products</h1>
@@ -86,10 +96,7 @@ function ProductList() {
         
       }}
       
-      className="px-2 py-1 rounded-md bg-gray-500 text-white"
-    >
-      Clear
-    </button>
+      className="px-2 py-1 rounded-md bg-gray-500 text-white">Clear</button>
 
     <label htmlFor="categoryFilter" className="mr-4 ml-4">
         Category:
@@ -140,6 +147,7 @@ function ProductList() {
           </div>
         ))}
       </div>
+      
       <div className="mt-8">
         <h2 className="text-3xl font-bold mb-4">Cart</h2>
         <ul>
@@ -156,8 +164,18 @@ function ProductList() {
           ))}
         </ul>
       </div>
+      <div className="container mx-auto px-1 py-2">
+    <div className="mt-8">
+      <button
+        onClick={handleCheckout}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+      >
+        Checkout
+      </button>
     </div>
-    
+  </div>
+      
+    </div>
   );
 }
 
