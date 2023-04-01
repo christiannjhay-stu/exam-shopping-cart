@@ -6,6 +6,8 @@ localStorage.setItem("items", JSON.stringify(productsData));
 
 
 function ProductList() {
+
+  
   const [cartItems, setCartItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState("");
